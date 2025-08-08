@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 주권 공포 구조론</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Academic Neutral -->
+    <!-- Application Structure Plan: The application is structured as a single-page, scroll-based narrative to guide users through the complex theory of "Sovereign Fear Structure." It starts with the core concept (Duality of Fear), moves to the mechanics (Triple Structure, Included Exclusion), provides real-world context (Case Studies), critiques modern systems (Democracy & Talnori), and concludes with a future vision. This thematic flow, rather than a linear chapter-by-chapter approach, is chosen for better usability and comprehension, allowing users to build understanding step-by-step through interactive diagrams and content reveals. -->
+    <!-- Visualization & Content Choices: 
+    1. Triple Structure: Report Info -> The 3-layered structure of sovereignty. Goal -> Organize/Inform. Viz -> Interactive nested HTML divs. Interaction -> Hover to reveal details of each layer. Justification -> More engaging than a static image, promotes exploration. Method -> HTML/CSS/JS.
+    2. Included Exclusion (A vs A'): Report Info -> The mechanism of creating a phantom enemy. Goal -> Explain a process. Viz -> A step-by-step interactive flow diagram built with HTML/CSS. Interaction -> User clicks through stages to see the process unfold. Justification -> Simplifies a complex psychological process into a clear narrative. Method -> HTML/CSS/JS.
+    3. Case Studies: Report Info -> Application of the theory to historical events. Goal -> Compare/Inform. Viz -> Tabbed content interface. Interaction -> Click tabs to switch content. Justification -> Prevents a long wall of text and gives user control. Method -> HTML/CSS/JS.
+    4. Talnori Critique: Report Info -> The critique of modern elections. Goal -> Compare/Contrast. Viz -> Side-by-side layout with icons. Interaction -> Clickable cards to highlight each concept. Justification -> Visually clarifies the abstract critique. Method -> HTML/CSS/JS.
+    CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F5F2;
+            color: #333333;
+        }
+        .accent-bg { background-color: #4A5568; }
+        .accent-text { color: #4A5568; }
+        .highlight-bg { background-color: #B79492; }
+        .highlight-text { color: #B79492; }
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 200, 200, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-button {
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active, .nav-button:hover {
+            border-bottom-color: #B79492;
+            color: #B79492;
+        }
+        .interactive-diagram-layer {
+            border: 2px solid;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .diagram-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4A5568;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            width: max-content;
+            max-width: 250px;
+            z-index: 10;
+        }
+        .interactive-diagram-layer:hover .diagram-tooltip {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="leading-relaxed">
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <ul class="flex justify-center space-x-4 md:space-x-8">
+                <li><a href="#intro" class="nav-button font-medium text-gray-600">소개</a></li>
+                <li><a href="#structure" class="nav-button font-medium text-gray-600">구조</a></li>
+                <li><a href="#mechanism" class="nav-button font-medium text-gray-600">메커니즘</a></li>
+                <li><a href="#cases" class="nav-button font-medium text-gray-600">사례</a></li>
+                <li><a href="#critique" class="nav-button font-medium text-gray-600">비판</a></li>
+                <li><a href="#conclusion" class="nav-button font-medium text-gray-600">결론</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="intro" class="text-center min-h-screen flex flex-col justify-center">
+            <h1 class="text-4xl md:text-6xl font-bold accent-text mb-4">주권의 두려움</h1>
+            <h2 class="text-xl md:text-2xl text-gray-700 mb-8">권영창의 주권 공포 구조론: 인터랙티브 탐구</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-10">
+                정치는 어떻게 공포를 만들고, 그 공포를 통해 작동하는가? 본 탐구는 권영창의 '주권 공포 구조론'을 통해, 통치의 이면에 숨겨진 두려움의 심리정치학을 해부합니다. 주권자의 불안과 피지배층의 안도감이 어떻게 맞물려 예외상태를 만들어내는지, 스크롤을 내려 확인해보세요.
+            </p>
+            <a href="#structure" class="mx-auto px-8 py-3 bg-white/80 border border-gray-300 rounded-full font-bold accent-text hover:bg-gray-50 transition">
+                탐구 시작하기 &darr;
+            </a>
+        </section>
+
+        <section id="structure" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold accent-text mb-2">공포의 건축학</h2>
+                <p class="text-lg text-gray-600">주권 공포 구조론은 주권이 작동하는 공간을 세 겹의 동심원적 구조로 파악합니다. 이 구조는 평시와 비상시를 가르는 권력의 작동 방식을 명확히 보여줍니다. 각 영역에 마우스를 올려보세요.</p>
+            </div>
+
+            <div class="w-full max-w-4xl mx-auto p-4 md:p-8 content-card rounded-xl">
+                <div id="diagram-layer-1" class="interactive-diagram-layer border-gray-700 p-4 md:p-8 rounded-lg h-[400px] md:h-[500px] flex justify-center items-center">
+                    <span class="absolute top-2 left-3 font-semibold text-gray-700">주권권역</span>
+                    <div class="diagram-tooltip">국민과 영토를 포함하는 국가의 총체적 지배 영역. 법의 안과 밖 모든 대상을 포괄하는 주권의 우주입니다.</div>
+                    
+                    <div id="diagram-layer-2" class="interactive-diagram-layer border-slate-500 w-5/6 h-5/6 p-4 md:p-8 rounded-lg flex justify-center items-center bg-white/30">
+                        <span class="absolute top-2 left-3 font-semibold text-slate-600">통치체계</span>
+                        <div class="diagram-tooltip">행정, 군, 경찰 등 통치를 실행하는 제도적 장치. 평시에는 법에 따르지만, 비상시에는 법을 넘어서는 조치를 수행합니다.</div>
+
+                        <div id="diagram-layer-3" class="interactive-diagram-layer border-emerald-600 w-2/3 h-2/3 p-4 md:p-8 rounded-lg flex justify-center items-center bg-white/50">
+                            <span class="absolute top-2 left-3 font-semibold text-emerald-700">법질서</span>
+                            <div class="diagram-tooltip">헌법과 법률 등 정규의 법 체계. 시민의 권리와 의무가 규정되는 규범의 핵심 영역입니다.</div>
+                            <p class="text-center font-medium text-emerald-800">법의 지배</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <p class="text-center mt-8 text-gray-600">
+                평상시에는 안쪽의 <b class="text-emerald-700">법질서</b>가 중심이 되어 <b class="text-slate-600">통치체계</b>를 규율합니다. 그러나 주권자는 자신의 권력에 대한 불안과 공포를 느낄 때, 위기를 명분으로 통치체계의 권한을 확대하여 법질서의 경계를 넘어서는 '예외상태'를 선포합니다. 이는 주권자 자신의 권력을 공고히 하기 위한 자기 방어적 기제에서 출발합니다.
+            </p>
+        </section>
+
+        <section id="mechanism" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold accent-text mb-2">공포의 엔진: 포함된 배제</h2>
+                <p class="text-lg text-gray-600">주권자는 어떻게 예외상태를 만들고 대중의 동의를 얻을까요? 그 핵심에는 '포함된 배제'라는 심리적 메커니즘이 있습니다. 아래 단계를 클릭하여 그 과정을 살펴보세요.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+                <div id="step1" class="p-6 content-card rounded-lg cursor-pointer">
+                    <h3 class="font-bold text-xl mb-2 highlight-text">1. 허상의 적 만들기 (A')</h3>
+                    <p class="text-sm text-gray-600">주권자는 사회적 불안을 이용해 '위험한 타자'라는 공포의 허상(A')을 만들어냅니다. (예: '빨갱이', '테러리스트')</p>
+                </div>
+                <div id="step2" class="p-6 content-card rounded-lg cursor-pointer opacity-50">
+                    <h3 class="font-bold text-xl mb-2">2. 실제 희생양 지목 (A)</h3>
+                    <p class="text-sm text-gray-600">만들어진 허상의 이미지를 특정 집단(A)에 덧씌워, 이들을 공포의 실체인 것처럼 낙인찍습니다.</p>
+                </div>
+                <div id="step3" class="p-6 content-card rounded-lg cursor-pointer opacity-50">
+                    <h3 class="font-bold text-xl mb-2">3. 포함을 통한 배제</h3>
+                    <p class="text-sm text-gray-600">희생양(A)을 법의 보호에서 '배제'함과 동시에, 처벌과 폭력의 대상으로 '포함'시켜 통제합니다.</p>
+                </div>
+                <div id="step4" class="p-6 content-card rounded-lg cursor-pointer opacity-50">
+                    <h3 class="font-bold text-xl mb-2">4. 다수의 심리적 안도</h3>
+                    <p class="text-sm text-gray-600">다수의 시민은 자신이 '배제되지 않음'에 안도하며, 타인에 대한 폭력을 묵인하고 주권자의 통치를 지지하게 됩니다.</p>
+                </div>
+            </div>
+            <div id="mechanism-display" class="mt-8 p-8 content-card rounded-xl min-h-[150px] flex items-center justify-center">
+                <p class="text-lg text-gray-700 font-medium">각 단계를 클릭하여 설명을 확인하세요.</p>
+            </div>
+        </section>
+
+        <section id="cases" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold accent-text mb-2">현실 속의 공포: 사례 연구</h2>
+                <p class="text-lg text-gray-600">주권 공포 구조는 추상적 이론이 아닙니다. 인류 역사는 이 메커니즘이 실제로 작동한 사례들로 가득합니다. 각 탭을 클릭해 살펴보세요.</p>
+            </div>
+
+            <div>
+                <div class="border-b border-gray-300">
+                    <nav class="-mb-px flex justify-center space-x-6" aria-label="Tabs">
+                        <button class="case-tab active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-highlight-bg text-highlight-text" data-target="case-nazi">나치 독일</button>
+                        <button class="case-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="case-regime">권위주의 정권</button>
+                        <button class="case-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="case-refugee">난민 문제</button>
+                    </nav>
+                </div>
+                <div class="mt-8">
+                    <div id="case-nazi" class="case-content">
+                        <div class="p-8 content-card rounded-lg">
+                            <h3 class="text-2xl font-bold mb-4 accent-text">나치 독일: 공포의 극단</h3>
+                            <p class="text-gray-700">나치는 '유대인 볼셰비즘'이라는 공포의 허상(A')을 만들어 독일 국민의 불안을 증폭시켰습니다. 실제 유대인(A)은 이 허상의 희생양이 되어 시민권을 박탈당하고(배제), 강제수용소에서 조직적으로 학살(포함)되었습니다. 이 모든 과정은 바이마르 헌법의 비상조항을 '합법적'으로 활용하는 방식으로 이루어졌으며, 독일 국민 다수는 유대인 배제를 통해 공동체의 안전을 확보했다는 심리적 안도감을 느끼며 이를 용인했습니다.</p>
+                        </div>
+                    </div>
+                    <div id="case-regime" class="case-content hidden">
+                        <div class="p-8 content-card rounded-lg">
+                            <h3 class="text-2xl font-bold mb-4 accent-text">권위주의 정권: 내부의 적</h3>
+                            <p class="text-gray-700">한국의 군사독재 정권은 '빨갱이' 또는 '북한의 위협'이라는 공포 담론(A')을 통해 민주화 요구를 탄압했습니다. 민주화 운동가(A)들은 국가보안법과 계엄령의 이름으로 불법 연행, 고문(포함)을 당하며 법의 보호에서 배제되었습니다. '반공'이라는 대의 아래, 다수 국민은 이러한 폭력을 국가 수호를 위한 불가피한 조치로 받아들이며, 체제에 순응하는 안도감을 느꼈습니다.</p>
+                        </div>
+                    </div>
+                    <div id="case-refugee" class="case-content hidden">
+                        <div class="p-8 content-card rounded-lg">
+                            <h3 class="text-2xl font-bold mb-4 accent-text">난민 문제: 현대의 호모 사케르</h3>
+                            <p class="text-gray-700">현대 사회에서 난민은 종종 '테러리스트', '범죄자'라는 공포의 허상(A')으로 그려집니다. 이들은 국경 밖, 수용소라는 예외 공간에 머물며 어떤 국가의 법으로도 온전히 보호받지 못하는 '벌거벗은 생명'으로 전락합니다. 국민들은 강화된 국경 통제를 통해 안전을 보장받는다는 안도감을 느끼지만, 그 대가로 난민들은 인간의 기본적 권리로부터 배제된 채 폭력에 노출됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="critique" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold accent-text mb-2">통제의 환상: 민주주의와 '탈놀이'</h2>
+                <p class="text-lg text-gray-600">이러한 공포 구조는 민주주의 체제에서도 교묘하게 작동합니다. 권영창은 현대의 선거를 '탈놀이'에 비유하며, 그 한계를 지적합니다. 두 개념을 비교해보세요.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-8 content-card rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4 highlight-text flex items-center">
+                        <span class="text-3xl mr-3">🎭</span> 전통 탈놀이
+                    </h3>
+                    <p class="text-gray-700">본래 탈놀이는 지배층에 대한 풍자와 비판이 허용되는 **진정한 카타르시스의 장**이었습니다. 피지배층은 일시적 일탈을 통해 억압된 감정을 해소했고, 지배층은 이를 용인하며 체제 전복의 압력을 낮추는 안전밸브로 활용했습니다. 자유롭고 즉흥적인 참여가 그 본질이었습니다.</p>
+                </div>
+                <div class="p-8 content-card rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4 accent-text flex items-center">
+                        <span class="text-3xl mr-3">🗳️</span> 축제적 선거
+                    </h3>
+                    <p class="text-gray-700">현대의 '축제적 선거'는 탈놀이의 형식을 빌렸지만, 그 비판적 잠재력과 자발성이 제거된 **의례적 행위**에 가깝습니다. 정해진 규칙 안에서 이뤄지는 선거는 주권이 시민에게 있는 듯한 환상을 제공하지만, 정작 국가비상권 등 주권의 핵심은 논의에서 배제됩니다. 근본적 권력 구조에 대한 도전 없이, 기존 질서를 재생산하는 역할을 합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="py-20 text-center">
+            <h2 class="text-3xl font-bold accent-text mb-4">공포 없는 주권을 향하여</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">
+                권영창의 이론은 주권이 공동체를 보호하는 힘인 동시에 억압하는 힘이 될 수 있는 역설을 보여줍니다. 그 갈림길에는 늘 '공포'가 있었습니다. 주권자의 불안과 피지배층의 안도감이 만들어내는 악순환의 고리를 끊는 것이야말로 진정한 시민 주권의 시작입니다.
+            </p>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                예외가 필요 없는 안정된 자유의 질서, 두려움이 아닌 용기와 연대로 응답하는 시민의 정치. 이것이 주권 공포 구조론이 궁극적으로 지향하는 미래의 비전입니다.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto text-center text-sm">
+            <p>&copy; 2025. 이 인터랙티브 문서는 권영창의 '주권 공포 구조론'을 기반으로 제작되었습니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mechanismSteps = document.querySelectorAll('#mechanism .grid > div');
+            const mechanismDisplay = document.getElementById('mechanism-display');
+            const stepContents = {
+                step1: `<h3 class="font-bold text-xl mb-2 highlight-text">1. 허상의 적 만들기 (A')</h3><p>주권자는 자신의 권력 기반이 흔들릴 수 있다는 내재적 공포와 불안을 외부로 투사합니다. 사회에 이미 존재하는 막연한 불안감을 특정 '위협'으로 구체화하여 '공포의 허상(A')'을 만듭니다. 이는 실체가 없거나 과장된 적으로, 대중의 공포를 한곳에 모으는 역할을 합니다.</p>`,
+                step2: `<h3 class="font-bold text-xl mb-2 highlight-text">2. 실제 희생양 지목 (A)</h3><p>만들어진 허상의 이미지를 특정 소수 집단이나 정치적 반대파(A)에게 덧씌웁니다. 이 과정을 통해 추상적이던 공포는 구체적인 대상을 갖게 되고, 대중은 이 집단이 모든 문제의 근원이라고 믿게 됩니다. 희생양은 이제 '공포의 실체'로 낙인찍힙니다.</p>`,
+                step3: `<h3 class="font-bold text-xl mb-2 highlight-text">3. 포함을 통한 배제</h3><p>희생양(A)은 법의 정상적인 보호망에서 '배제'됩니다. 동시에, 이들은 국가의 감시, 처벌, 폭력의 대상으로 끊임없이 호명되며 통치체계 안으로 '포함'됩니다. 이들은 법 밖에 있지만, 역설적으로 법의 예외적 힘이 가장 강력하게 작용하는 대상이 됩니다.</p>`,
+                step4: `<h3 class="font-bold text-xl mb-2 highlight-text">4. 다수의 심리적 안도</h3><p>다수의 시민은 자신이 희생양(A)이 아니라는 사실, 즉 통치체계의 '보호받는 내부'에 속해있다는 사실에서 안도감을 느낍니다. 이 안도감은 희생양에 대한 폭력과 배제를 묵인하거나 정당화하는 강력한 심리적 기제로 작용하며, 결과적으로 주권자의 예외적 통치를 지지하게 만듭니다.</p>`
+            };
+
+            mechanismSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    mechanismSteps.forEach(s => s.classList.add('opacity-50'));
+                    step.classList.remove('opacity-50');
+                    mechanismDisplay.innerHTML = stepContents[step.id];
+                });
+            });
+
+            const caseTabs = document.querySelectorAll('.case-tab');
+            const caseContents = document.querySelectorAll('.case-content');
+
+            caseTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    caseTabs.forEach(t => t.classList.remove('active', 'border-highlight-bg', 'text-highlight-text'));
+                    tab.classList.add('active', 'border-highlight-bg', 'text-highlight-text');
+
+                    const target = document.getElementById(tab.dataset.target);
+                    caseContents.forEach(content => content.classList.add('hidden'));
+                    target.classList.remove('hidden');
+                });
+            });
+
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('main section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
